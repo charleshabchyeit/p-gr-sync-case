@@ -43,8 +43,8 @@ attributes.headers.'x-db-connectas' as String]]></ee:set-variable>
 			<http:headers ><![CDATA[#[output application/json
 ---
 {
-	client_secret : attributes.headers.client_secret,
-	client_id : attributes.headers.client_id
+	"client_id" : attributes.headers.client_id,
+	"client_secret" : attributes.headers.client_secret
 }]]]></http:headers>
 			<http:query-params ><![CDATA[#[output application/java
 ---
@@ -94,8 +94,8 @@ output application/json
 			<http:headers ><![CDATA[#[output application/json
 ---
 {
-	client_secret : attributes.headers.client_secret,
-	client_id : attributes.headers.client_id
+	"client_id" : attributes.headers.client_id,
+	"client_secret" : attributes.headers.client_secret
 }]]]></http:headers>
 		</http:request>
 		<ee:transform doc:name="GedIds" doc:id="03e05097-5940-48bb-b435-34110c78e707" >

@@ -38,11 +38,11 @@ output application/java
 			doc:id="c8177b63-285e-47ce-96d8-485ce8728f79"
 			name="mule-common-logger-subflow" />
 		<http:request method="GET" doc:name="Read SFTP from Docubase" doc:id="200e021a-e963-4af1-9028-9fce0b78f411" config-ref="http-request-s-gr-docubase" path="#['${config.docubase.path.baseURI}' ++ '${config.docubase.endpoint.readFile}']" responseTimeout="999999999">
-			<http:headers ><![CDATA[#[output application/java
+			<http:headers ><![CDATA[#[output application/json
 ---
 {
-	client_secret : 111,
-	client_id : 111
+	"client_id" : attributes.headers.client_id,
+	"client_secret" : attributes.headers.client_secret
 }]]]></http:headers>
 		</http:request>
 		<ee:transform doc:name="To JSON"
@@ -118,11 +118,11 @@ vars.listCasesToInsert map (item, index) -> {
 					config-ref="http-request-s-gr-sfdc"
 					path="#['${config.salesforce.path.baseURI}' ++ '${config.salesforce.endpoint.upsertRecords}']"
 					responseTimeout="999999999">
-					<http:headers><![CDATA[#[output application/java
+					<http:headers><![CDATA[#[output application/json
 ---
 {
-client_secret : 111,
-client_id : 111
+	"client_id" : attributes.headers.client_id,
+	"client_secret" : attributes.headers.client_secret
 }]]]></http:headers>
 					<http:query-params><![CDATA[#[output application/json
 ---
@@ -176,11 +176,11 @@ vars.listTasksToInsert map (item, index) -> {
 					config-ref="http-request-s-gr-sfdc"
 					path="#['${config.salesforce.path.baseURI}' ++ '${config.salesforce.endpoint.upsertRecords}']"
 					responseTimeout="999999999">
-					<http:headers><![CDATA[#[output application/java
+					<http:headers><![CDATA[#[output application/json
 ---
 {
-client_secret : 111,
-client_id : 111
+	"client_id" : attributes.headers.client_id,
+	"client_secret" : attributes.headers.client_secret
 }]]]></http:headers>
 					<http:query-params><![CDATA[#[output application/json
 ---

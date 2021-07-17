@@ -8,7 +8,8 @@ api:
   version: "v1"
 
 http:
-  port: "8081"
+  private:
+    port: "8081"
   timeout: "99999999"
   listener:
     path: "/api/${api.name}/${api.version}/*"
@@ -20,8 +21,8 @@ https:
 config:
   docubase:
     protocol: "HTTP"
-    host: "s-gr-docubase.de-c1.eu1.cloudhub.io"
-    port: ""
+    host: "mule-worker-internal-s-gr-docubase.de-c1.eu1.cloudhub.io"
+    port: "8091"
     path:
       baseURI: "api/s-gr-docubase-dev/v1"
     endpoint: 
@@ -33,8 +34,8 @@ config:
   salesforce:
      protocol: "HTTP"
      authorizationURL: "https://test.salesforce.com/services/Soap/u/50.0"
-     host: "s-gr-sfdc.de-c1.eu1.cloudhub.io"
-     port: ""
+     host: "mule-worker-internal-s-gr-sfdc.de-c1.eu1.cloudhub.io"
+     port: "8091"
      username: "mulesoft.api@garance.fr.lot1real"
      password: "garance@123"
      securityToken: "tKO7vwAyJhyB2QRzU4VOmaQKy"
