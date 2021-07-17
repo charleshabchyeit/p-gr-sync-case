@@ -21,7 +21,7 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 	<secure-properties:config name="secure-config-p-gr-sync-case" doc:name="Secure Properties Config" doc:id="a52aec6b-92c9-4e77-ac7a-ad7a63c8fd90" file="secure/${mule.securefile}.yaml" key="encPassword">
 		<secure-properties:encrypt algorithm="Blowfish" mode="ECB" />
 	</secure-properties:config>
-	<apikit:config outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" doc:name="Router" doc:id="d65321cb-52b0-44e3-bfea-04ad0ea9c2d5" name="router-config-p-gr-sync-case" api="p-gr-sync-case.raml" disableValidations="true"/>
+	<apikit:config outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" doc:name="Router" doc:id="d65321cb-52b0-44e3-bfea-04ad0ea9c2d5" name="p-gr-sync-case-config" api="p-gr-sync-case.raml" disableValidations="true"/>
 	<http:request-config name="http-request-s-gr-docubase" doc:name="HTTP Request configuration" doc:id="cc507271-ebba-49a7-afd4-f35c2c224c5e" basePath="/${config.docubase.path.baseURI}">
 		<http:request-connection protocol="${config.docubase.protocol}" host="${config.docubase.host}" port="${config.docubase.port}" connectionIdleTimeout="${http.timeout}" />
 	</http:request-config>
