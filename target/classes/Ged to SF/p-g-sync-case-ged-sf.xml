@@ -95,22 +95,22 @@ output application/json
 					doc:id="4e33e6ab-876d-412a-b6a7-88f0c83e7510">
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
 ---
 vars.listCasesToInsert map (item, index) -> {
-"IDGED__c": item.GEDID as Number,
-("Account": {NAdherent__c: item.'NUM ADHERENT'}) if(!isEmpty(item.'NUM ADHERENT')),
-("Contrat__r": {"type": "Contract", NContrat__c: item.'NUM CONTRAT'}) if(!isEmpty(item.'NUM CONTRAT')),
-"NumeroDuDocument__c": item.'NUM DOCUMENT',
-"DomainedActivite__c": item.'FAMILLE ACTE DE GESTION',
-"RecordtypeId" : if(item.'FAMILLE ACTE DE GESTION' == "Réclamation")(p('recordType.Case.Reclamation'))else('recordType.case.Demande'),
-"MontantEncaissement__c ": item.'MONTANT CHEQUE',
-"Origin": if(item.'CANAL ENTREE' =="P")("Courrier")else if(item.'CANAL ENTREE' =="M")("Email")else if(item.'CANAL ENTREE' =="E")("Web") else (""), // à verifier FAX
-"Reason": item.'ACTE DE GESTION',
-"SousMotif__c": item.'TEST' default "",
-"TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT',
-"ReferenceEncaissement__c": item.'CMC7' default ""
-//"Status" : item.status
-} ]]></ee:set-payload>
+	("IDPLI__c": item.'ID PLI') if(!isEmpty(item.'ID PLI')),
+	("Account": {NAdherent__c: item.'NUM ADHERENT'}) if(!isEmpty(item.'NUM ADHERENT')),
+	("Contrat__r": {"type": "Contract", NContrat__c: item.'NUM CONTRAT'}) if(!isEmpty(item.'NUM CONTRAT')),
+	("DomainedActivite__c": item.'FAMILLE ACTE DE GESTION') if(!isEmpty(item.'FAMILLE ACTE DE GESTION')),
+	"RecordtypeId" : if(item.'FAMILLE ACTE DE GESTION' == "Réclamation")(p('recordType.Case.Reclamation'))else(p('recordType.Case.Demande')),
+	("MontantEncaissement__c ": item.'MONTANT CHEQUE') if(!isEmpty(item.'MONTANT CHEQUE')),
+	"Origin": if(item.'CANAL ENTREE' =="P" or item.'CANAL ENTREE' =="F")("Courrier")else if(item.'CANAL ENTREE' =="M")("Email")else if(item.'CANAL ENTREE' =="E")("Web") else (""),
+	"Reason": item.'ACTE DE GESTION',
+	"SousMotif__c": if(item.'SOUS MOTIF' == 'aucun') ("") else (item.'SOUS MOTIF'),
+	//("TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT') if(!isEmpty(item.'TYPOLOGIE DE DOCUMENT')),
+	//Status?
+	("ReferenceEncaissement__c": item.'CMC7' default "") if(!isEmpty(item.'CMC7'))
+}]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
 				<http:request method="POST" doc:name="Request to SF"
@@ -158,17 +158,13 @@ output application/json
 ---
 vars.listTasksToInsert map (item, index) -> {
 	"DateDeNumerisation__c" : item.'DATE DE NUMERISATION' as Date {format:"yyyyMMdd"} as Date {format: "yyyy-MM-dd"},
-	//"What": {
-	// "type":"Account",
-	 //"NAdherent__c": item.'NUM ADHERENT'
-	// },
 	"zzz_NAdherent__c": item.'NUM ADHERENT',
 	"NumeroDuDocument__c": item.'NUM DOCUMENT',
 	"Montant__c ": item.'MONTANT CHEQUE',
 	"TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT',
-	"IdGed__c": item.'GEDID' as Number
-	//"Status" : item.status
-	} ]]></ee:set-payload>
+	"IdGed__c": item.'GEDID' as Number,
+	"Status" : "Traitée"
+} ]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
 				<http:request method="POST" doc:name="Request to SF"
