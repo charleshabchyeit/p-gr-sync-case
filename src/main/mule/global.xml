@@ -18,7 +18,7 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 	<configuration-properties doc:name="Configuration properties" doc:id="e03a35af-b32d-4b56-afd2-952b25f4a6fd" file="environment\default-prop.yaml"/>
 	<configuration-properties doc:name="Configuration properties" doc:id="8bff2d44-5c67-4616-95d6-9aa01a6cb2e6" file="secure/${mule.securefile}.yaml" />
 	<global-property doc:name="Global Property" doc:id="030fbf64-4809-4d2b-a5b1-5a1358eb0aa6" name="mule.securefile" value="dev-secure" />
-	<secure-properties:config name="p-gr-sync-docubase-sf-case-impl-encryption" doc:name="Secure Properties Config" doc:id="a52aec6b-92c9-4e77-ac7a-ad7a63c8fd90" file="secure/${mule.securefile}.yaml" key="encPassword">
+	<secure-properties:config name="secure-config-p-gr-sync-case" doc:name="Secure Properties Config" doc:id="a52aec6b-92c9-4e77-ac7a-ad7a63c8fd90" file="secure/${mule.securefile}.yaml" key="encPassword">
 		<secure-properties:encrypt algorithm="Blowfish" mode="ECB" />
 	</secure-properties:config>
 	<apikit:config outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" doc:name="Router" doc:id="d65321cb-52b0-44e3-bfea-04ad0ea9c2d5" name="p-gr-sync-case-config" api="p-gr-sync-case.raml" disableValidations="true"/>
@@ -36,8 +36,10 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 		<salesforce:basic-connection username="${config.salesforce.username}" password="${config.salesforce.password}" securityToken="${config.salesforce.securityToken}" url="${config.salesforce.authorizationURL}" />
 	</salesforce:sfdc-config>
 	<http:listener-config
-		name="http-listener-config-process">
+		name="http-listener-config-p-gr-sync-case">
 		<http:listener-connection host="0.0.0.0"
-			port="${http.port}" connectionIdleTimeout="${http.timeout}" />
+			port="${http.private.port}" connectionIdleTimeout="${http.timeout}" />
 	</http:listener-config>
+	<global-property doc:name="Global Property" doc:id="389235e3-1773-4f52-b439-768f1ab1556c" name="recordType.Case.Reclamation" value="0121q0000000qz9AAA" />
+	<global-property doc:name="Global Property" doc:id="d3708d02-04fc-408b-af0d-06bc892b802f" name="recordType.case.Demande" value="0121q0000000nDhAAI" />
 </mule>
