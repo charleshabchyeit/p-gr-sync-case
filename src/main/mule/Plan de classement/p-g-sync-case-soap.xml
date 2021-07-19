@@ -21,7 +21,7 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 				<ee:set-variable variableName="logMessage" ><![CDATA[%dw 2.0
 output application/java
 ---
-"Process Docubase Request - Plan de Classement - Start"]]></ee:set-variable>
+'Process - Docubase to Salesforce - Plan de Classement - Start']]></ee:set-variable>
 				<ee:set-variable variableName="logCategory" ><![CDATA[%dw 2.0
 output application/java
 ---
@@ -53,7 +53,7 @@ output application/java
 				<ee:set-variable variableName="logMessage" ><![CDATA[%dw 2.0
 output application/java
 ---
-"Process Docubase Request - Plan de Classement - Finish"]]></ee:set-variable>
+'Process - Docubase to Salesforce - Plan de Classement - Finish']]></ee:set-variable>
 				<ee:set-variable variableName="logCategory" ><![CDATA[%dw 2.0
 output application/java
 ---

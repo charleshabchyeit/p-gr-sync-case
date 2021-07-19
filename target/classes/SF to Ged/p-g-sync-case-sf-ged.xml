@@ -15,7 +15,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 				<ee:set-variable variableName="logMessage" ><![CDATA[%dw 2.0
 output application/java
 ---
-'Process cases from Salesforce to Docubase - Start']]></ee:set-variable>
+'Process - Salesforce to Docubase - Updating Cases - Start']]></ee:set-variable>
 				<ee:set-variable variableName="logCategory" ><![CDATA[%dw 2.0
 output application/java
 ---
@@ -124,7 +124,7 @@ payload.solutionExtendedList.documentExtended.documentInformation.gedId]]></ee:s
 				<ee:set-variable variableName="logMessage" ><![CDATA[%dw 2.0
 output application/java
 ---
-'Process cases from Salesforce to Docubase - Finish']]></ee:set-variable>
+'Process - Salesforce to Docubase - Updating Cases - Finish']]></ee:set-variable>
 				<ee:set-variable variableName="logCategory" ><![CDATA[%dw 2.0
 output application/java
 ---

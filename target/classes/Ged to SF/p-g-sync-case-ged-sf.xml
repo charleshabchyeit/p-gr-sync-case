@@ -23,7 +23,7 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 				<ee:set-variable variableName="logMessage"><![CDATA[%dw 2.0
 output application/java
 ---
-'Process cases from Docubase to Salesforce - Start']]></ee:set-variable>
+'Process - Docubase to Salesforce - Updating Cases and Tasks - Start']]></ee:set-variable>
 				<ee:set-variable variableName="logCategory"><![CDATA[%dw 2.0
 output application/java
 ---
@@ -37,7 +37,7 @@ output application/java
 		<flow-ref doc:name="mule-common-logger-subflow"
 			doc:id="c8177b63-285e-47ce-96d8-485ce8728f79"
 			name="mule-common-logger-subflow" />
-		<http:request method="GET" doc:name="Read SFTP from Docubase" doc:id="200e021a-e963-4af1-9028-9fce0b78f411" config-ref="http-request-s-gr-docubase" path="#['${config.docubase.path.baseURI}' ++ '${config.docubase.endpoint.readFile}']" responseTimeout="999999999">
+		<http:request method="GET" doc:name="Read SFTP from Docubase" doc:id="200e021a-e963-4af1-9028-9fce0b78f411" config-ref="http-request-s-gr-docubase" path="#['${config.docubase.endpoint.readFile}']" responseTimeout="999999999">
 			<http:headers ><![CDATA[#[output application/json
 ---
 {
@@ -116,7 +116,7 @@ vars.listCasesToInsert map (item, index) -> {
 				<http:request method="POST" doc:name="Request to SF"
 					doc:id="c978909f-ca35-40e2-bd6f-d9af39d4d935"
 					config-ref="http-request-s-gr-sfdc"
-					path="#['${config.salesforce.path.baseURI}' ++ '${config.salesforce.endpoint.upsertRecords}']"
+					path="#['${config.salesforce.endpoint.upsertRecords}']"
 					responseTimeout="999999999">
 					<http:headers><![CDATA[#[output application/json
 ---
@@ -170,7 +170,7 @@ vars.listTasksToInsert map (item, index) -> {
 				<http:request method="POST" doc:name="Request to SF"
 					doc:id="20d8974b-c886-4788-9740-41080c498f7f"
 					config-ref="http-request-s-gr-sfdc"
-					path="#['${config.salesforce.path.baseURI}' ++ '${config.salesforce.endpoint.upsertRecords}']"
+					path="#['${config.salesforce.endpoint.upsertRecords}']"
 					responseTimeout="999999999">
 					<http:headers><![CDATA[#[output application/json
 ---
@@ -214,7 +214,7 @@ vars.responseMessages ++ payload]]></ee:set-variable>
 				<ee:set-variable variableName="logMessage"><![CDATA[%dw 2.0
 output application/java
 ---
-'Process cases from Docubase to Salesforce - Finish']]></ee:set-variable>
+'Process - Docubase to Salesforce - Updating Cases and Tasks - Finish']]></ee:set-variable>
 				<ee:set-variable variableName="logCategory"><![CDATA[%dw 2.0
 output application/java
 ---
