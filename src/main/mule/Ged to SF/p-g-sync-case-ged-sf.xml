@@ -37,31 +37,12 @@ output application/java
 		<flow-ref doc:name="mule-common-logger-subflow"
 			doc:id="c8177b63-285e-47ce-96d8-485ce8728f79"
 			name="mule-common-logger-subflow" />
-		<salesforce:query doc:name="Query Case RecordType"
-			doc:id="06eff1f7-0531-42c7-863e-f906853c4033"
-			config-ref="Salesforce_Config">
-			<salesforce:salesforce-query><![CDATA[SELECT Id, Name from recordtype where SobjectType = 'Case']]></salesforce:salesforce-query>
-		</salesforce:query>
-		<ee:transform doc:name="RecordType Id"
-			doc:id="e5286d54-60ea-4fe3-a342-a9ea01f8111b">
-			<ee:message />
-			<ee:variables>
-				<ee:set-variable variableName="IdReclamation"><![CDATA[%dw 2.0
-output application/json
----
-(payload filter (value, index) -> ((value.Name == 'Réclamation'))).Id]]></ee:set-variable>
-				<ee:set-variable variableName="IdDemande"><![CDATA[%dw 2.0
-output application/json
----
-(payload filter (value, index) -> ((value.Name == 'Demande'))).Id]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-		<http:request method="GET" doc:name="Read File from Docubase" doc:id="200e021a-e963-4af1-9028-9fce0b78f411" config-ref="http-request-s-gr-docubase" path="#['${config.docubase.path.baseURI}' ++ '${config.docubase.endpoint.readFile}']" responseTimeout="999999999">
-			<http:headers ><![CDATA[#[output application/java
+		<http:request method="GET" doc:name="Read SFTP from Docubase" doc:id="200e021a-e963-4af1-9028-9fce0b78f411" config-ref="http-request-s-gr-docubase" path="#['${config.docubase.path.baseURI}' ++ '${config.docubase.endpoint.readFile}']" responseTimeout="999999999">
+			<http:headers ><![CDATA[#[output application/json
 ---
 {
-	client_secret : 111,
-	client_id : 111
+	"client_id" : attributes.headers.client_id,
+	"client_secret" : attributes.headers.client_secret
 }]]]></http:headers>
 		</http:request>
 		<ee:transform doc:name="To JSON"
@@ -114,22 +95,22 @@ output application/json
 					doc:id="4e33e6ab-876d-412a-b6a7-88f0c83e7510">
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
 ---
 vars.listCasesToInsert map (item, index) -> {
-"IDGED__c": item.GEDID as Number,
-("Account": {NAdherent__c: item.'NUM ADHERENT'}) if(!isEmpty(item.'NUM ADHERENT')),
-("Contrat__r": {"type": "Contract", NContrat__c: item.'NUM CONTRAT'}) if(!isEmpty(item.'NUM CONTRAT')),
-"NumeroDuDocument__c": item.'NUM DOCUMENT',
-"DomainedActivite__c": item.'FAMILLE ACTE DE GESTION',
-"RecordtypeId" : if(item.'FAMILLE ACTE DE GESTION' == "Réclamation")(vars.IdReclamation)else(vars.IdDemande),
-"MontantEncaissement__c ": item.'MONTANT CHEQUE',
-"Origin": if(item.'CANAL ENTREE' =="P")("Courrier")else if(item.'CANAL ENTREE' =="M")("Email")else if(item.'CANAL ENTREE' =="E")("Web") else (""), // à verifier FAX
-"Reason": item.'ACTE DE GESTION',
-"SousMotif__c": item.'TEST' default "",
-"TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT',
-"ReferenceEncaissement__c": item.'CMC7' default ""
-//"Status" : item.status
-} ]]></ee:set-payload>
+	("IDPLI__c": item.'ID PLI') if(!isEmpty(item.'ID PLI')),
+	("Account": {NAdherent__c: item.'NUM ADHERENT'}) if(!isEmpty(item.'NUM ADHERENT')),
+	("Contrat__r": {"type": "Contract", NContrat__c: item.'NUM CONTRAT'}) if(!isEmpty(item.'NUM CONTRAT')),
+	("DomainedActivite__c": item.'FAMILLE ACTE DE GESTION') if(!isEmpty(item.'FAMILLE ACTE DE GESTION')),
+	"RecordtypeId" : if(item.'FAMILLE ACTE DE GESTION' == "Réclamation")(p('recordType.Case.Reclamation'))else(p('recordType.Case.Demande')),
+	("MontantEncaissement__c ": item.'MONTANT CHEQUE') if(!isEmpty(item.'MONTANT CHEQUE')),
+	"Origin": if(item.'CANAL ENTREE' =="P" or item.'CANAL ENTREE' =="F")("Courrier")else if(item.'CANAL ENTREE' =="M")("Email")else if(item.'CANAL ENTREE' =="E")("Web") else (""),
+	"Reason": item.'ACTE DE GESTION',
+	"SousMotif__c": if(item.'SOUS MOTIF' == 'aucun') ("") else (item.'SOUS MOTIF'),
+	//("TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT') if(!isEmpty(item.'TYPOLOGIE DE DOCUMENT')),
+	//Status?
+	("ReferenceEncaissement__c": item.'CMC7' default "") if(!isEmpty(item.'CMC7'))
+}]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
 				<http:request method="POST" doc:name="Request to SF"
@@ -137,11 +118,11 @@ vars.listCasesToInsert map (item, index) -> {
 					config-ref="http-request-s-gr-sfdc"
 					path="#['${config.salesforce.path.baseURI}' ++ '${config.salesforce.endpoint.upsertRecords}']"
 					responseTimeout="999999999">
-					<http:headers><![CDATA[#[output application/java
+					<http:headers><![CDATA[#[output application/json
 ---
 {
-client_secret : 111,
-client_id : 111
+	"client_id" : attributes.headers.client_id,
+	"client_secret" : attributes.headers.client_secret
 }]]]></http:headers>
 					<http:query-params><![CDATA[#[output application/json
 ---
@@ -177,17 +158,13 @@ output application/json
 ---
 vars.listTasksToInsert map (item, index) -> {
 	"DateDeNumerisation__c" : item.'DATE DE NUMERISATION' as Date {format:"yyyyMMdd"} as Date {format: "yyyy-MM-dd"},
-	//"What": {
-	// "type":"Account",
-	 //"NAdherent__c": item.'NUM ADHERENT'
-	// },
 	"zzz_NAdherent__c": item.'NUM ADHERENT',
 	"NumeroDuDocument__c": item.'NUM DOCUMENT',
 	"Montant__c ": item.'MONTANT CHEQUE',
 	"TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT',
-	"IdGed__c": item.'GEDID' as Number
-	//"Status" : item.status
-	} ]]></ee:set-payload>
+	"IdGed__c": item.'GEDID' as Number,
+	"Status" : "Traitée"
+} ]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
 				<http:request method="POST" doc:name="Request to SF"
@@ -195,11 +172,11 @@ vars.listTasksToInsert map (item, index) -> {
 					config-ref="http-request-s-gr-sfdc"
 					path="#['${config.salesforce.path.baseURI}' ++ '${config.salesforce.endpoint.upsertRecords}']"
 					responseTimeout="999999999">
-					<http:headers><![CDATA[#[output application/java
+					<http:headers><![CDATA[#[output application/json
 ---
 {
-client_secret : 111,
-client_id : 111
+	"client_id" : attributes.headers.client_id,
+	"client_secret" : attributes.headers.client_secret
 }]]]></http:headers>
 					<http:query-params><![CDATA[#[output application/json
 ---
