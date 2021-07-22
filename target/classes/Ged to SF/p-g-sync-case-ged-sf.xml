@@ -95,7 +95,7 @@ output application/json
 					doc:id="4e33e6ab-876d-412a-b6a7-88f0c83e7510">
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
-output application/json
+output application/json encoding="Cp1252"
 ---
 vars.listCasesToInsert map (item, index) -> {
 	("IDPLI__c": item.'ID PLI') if(!isEmpty(item.'ID PLI')),
@@ -106,10 +106,10 @@ vars.listCasesToInsert map (item, index) -> {
 	("MontantEncaissement__c ": item.'MONTANT CHEQUE') if(!isEmpty(item.'MONTANT CHEQUE')),
 	"Origin": if(item.'CANAL ENTREE' =="P" or item.'CANAL ENTREE' =="F")("Courrier")else if(item.'CANAL ENTREE' =="M")("Email")else if(item.'CANAL ENTREE' =="E")("Web") else (""),
 	"Reason": item.'ACTE DE GESTION',
-	"SousMotif__c": if(item.'SOUS MOTIF' == 'aucun') ("") else (item.'SOUS MOTIF'),
-	//("TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT') if(!isEmpty(item.'TYPOLOGIE DE DOCUMENT')),
-	//Status?
-	("ReferenceEncaissement__c": item.'CMC7' default "") if(!isEmpty(item.'CMC7'))
+	//"SousMotif__c": if(item.'SOUS MOTIF' == 'aucun') ("") else (item.'SOUS MOTIF'),
+	("TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT') if(!isEmpty(item.'TYPOLOGIE DE DOCUMENT')),
+	//("Status": if (item.'Status' == "A TRAITER" or item.'Status' == "INCONNUS") ("A traiter") else if (item.Status == "EN COURS DE TRAITEMENT") ("En cours") else if (item.'Status' == "EN ATTENTE" or item.'Status' == "CONTROLE CHEQUE") ("En attente") else if (item.'Status' == "TRAITE") ("Clôturée") else "") if(!isEmpty(item.'Status')),
+	//("ReferenceEncaissement__c": item.'CMC7' default "") if(!isEmpty(item.'CMC7'))
 }]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
