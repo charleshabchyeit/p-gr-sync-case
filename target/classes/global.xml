@@ -102,7 +102,7 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 	<http:listener-config
 		name="http-listener-config-p-gr-sync-case">
 		<http:listener-connection host="0.0.0.0"
-			port="${http.private.port}" connectionIdleTimeout="${http.timeout}" />
+			port="${http.port}" connectionIdleTimeout="${http.timeout}" />
 	</http:listener-config>
 	<global-property doc:name="Global Property"
 		doc:id="389235e3-1773-4f52-b439-768f1ab1556c"
@@ -110,8 +110,9 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 	<global-property doc:name="Global Property"
 		doc:id="d3708d02-04fc-408b-af0d-06bc892b802f"
 		name="recordType.Case.Demande" value="0121q0000000nDhAAI" />
-	<api-gateway:autodiscovery apiId="${api.id}"
-		ignoreBasePath="true" doc:name="API Autodiscovery"
-		doc:id="9def1d3b-ff44-44c4-aa6e-baed71a7a9ea" flowRef="p-gr-sync-case-main" />
+<!-- 	<api-gateway:autodiscovery apiId="${api.id}" -->
+<!-- 		ignoreBasePath="true" doc:name="API Autodiscovery" -->
+<!-- 		doc:id="9def1d3b-ff44-44c4-aa6e-baed71a7a9ea" -->
+<!-- 		flowRef="p-gr-sync-case-main" /> -->
 
 </mule>

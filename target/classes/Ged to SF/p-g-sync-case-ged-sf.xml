@@ -162,7 +162,7 @@ vars.listTasksToInsert map (item, index) -> {
 	"NumeroDuDocument__c": item.'NUM DOCUMENT',
 	"Montant__c ": item.'MONTANT CHEQUE',
 	"TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT',
-	"IdGed__c": item.'GEDID' as Number,
+	"IdGed__c": item.'ID PLI',
 	"Status" : "Traitée"
 } ]]></ee:set-payload>
 					</ee:message>
