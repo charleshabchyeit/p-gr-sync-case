@@ -4,12 +4,11 @@ environment:
   
 api:
   name: "${application.name}-${environment.name}"
-  //id: "795536"
+  id: "795536"
   version: "v1"
 
 http:
-  private:
-    port: "8085"
+  port: "8085"
   timeout: "99999999"
   listener:
     path: "/api/${api.name}/${api.version}/*"
