@@ -8,14 +8,14 @@
 	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
-	<flow name="get:\syncCaseSFGed\(baseId)\(id):p-gr-sync-case-config" doc:id="e11e14e4-2160-4d2f-9075-9f1531e56e4c" >
-		<ee:transform doc:name="Set Log Configuration" doc:id="84b8813d-dfe8-4abe-9dd1-332dcbd7a01e" >
+	<flow name="get:\syncCaseSFGed\(baseId)\(id):p-gr-sync-case-config" doc:id="13dc90bd-50fc-4dab-8f08-eb321c71c7bf" >
+		<ee:transform doc:name="Set Log Configuration" doc:id="9b02c16a-c254-4dba-864e-c3480db52f81" >
 			<ee:message />
 			<ee:variables >
 				<ee:set-variable variableName="logMessage" ><![CDATA[%dw 2.0
 output application/java
 ---
-'Process cases from Salesforce to Docubase - Start']]></ee:set-variable>
+'Process - Salesforce to Docubase - Updating Cases - Start']]></ee:set-variable>
 				<ee:set-variable variableName="logCategory" ><![CDATA[%dw 2.0
 output application/java
 ---
@@ -26,8 +26,8 @@ output application/java
 'INFO']]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<flow-ref doc:name="mule-common-logger-subflow" doc:id="0ae610f8-6d5a-4b1b-81c6-32ed8867ad3d" name="mule-common-logger-subflow" />
-		<ee:transform doc:name="Variables" doc:id="8728e42c-dd75-4aa7-914c-f470575bdae7" >
+		<flow-ref doc:name="mule-common-logger-subflow" doc:id="877968e6-00dc-42aa-8c14-094d9a54625c" name="mule-common-logger-subflow" />
+		<ee:transform doc:name="Variables" doc:id="d5db4ea9-ef47-488c-aff9-e8ca43e44168" >
 			<ee:message >
 			</ee:message>
 			<ee:variables >
@@ -37,14 +37,24 @@ output application/java
 output application/json
 ---
 attributes.headers.'x-db-connectas' as String]]></ee:set-variable>
+				<ee:set-variable variableName="client_id" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.client_id
+]]></ee:set-variable>
+				<ee:set-variable variableName="client_secret" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.client_secret
+]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<http:request method="GET" doc:name="Request to SF" doc:id="915ab16b-5958-4b7b-a369-8ad62c85ccdf" config-ref="http-request-s-gr-sfdc" path="#['${config.salesforce.endpoint.getRecord}']" responseTimeout="999999999" >
+		<http:request method="GET" doc:name="Request to SF" doc:id="b21d6bd0-cc80-4997-8f62-75cc7a65173d" config-ref="http-request-s-gr-sfdc" path="#['${config.salesforce.endpoint.getRecord}']" responseTimeout="999999999" >
 			<http:headers ><![CDATA[#[output application/json
 ---
 {
-	"client_id" : attributes.headers.client_id,
-	"client_secret" : attributes.headers.client_secret
+	"client_id" : vars.client_id,
+	"client_secret" : vars.client_secret
 }]]]></http:headers>
 			<http:query-params ><![CDATA[#[output application/java
 ---
@@ -52,8 +62,8 @@ attributes.headers.'x-db-connectas' as String]]></ee:set-variable>
 queryString : vars.personalInfoQuery
 }]]]></http:query-params>
 		</http:request>
-		<set-variable value='#[payload[0].IDPLI__c]' doc:name="ID PLI" doc:id="21bb4921-c616-453e-b937-210b07be1d75" variableName="idPli"/>
-		<ee:transform doc:name="SF to Docubase" doc:id="5abd2569-7f00-4b7f-8ec5-101fc801478d" >
+		<set-variable value='#[payload[0].IDPLI__c]' doc:name="ID PLI" doc:id="dcd5160d-446f-4f03-b047-ec875b5efe16" variableName="idPli"/>
+		<ee:transform doc:name="SF to Docubase" doc:id="65913042-1910-478a-b2fd-840f36b8ef23" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -82,23 +92,22 @@ output application/json
 	}) if(!isEmpty(payload[0].Reason)),
 	({
 	"categoryId": 41,
-	"word": payload[0].Status
-	}) if(!isEmpty(payload[0].Status))
+	"word": if(payload[0].Status == "A traiter") ("A TRAITER") else if (payload[0].Status == "En attente") ("EN ATTENTE") else if (payload[0].Status == "En cours" or payload[0].Status == "Retour à traiter") ("EN COURS DE TRAITEMENT") else if (payload[0].Status == "Clôturée") ("TRAITE") else ""}) if(!isEmpty(payload[0].Status))
 	]
 }
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<set-variable value="#[payload]" doc:name="Payload" doc:id="1c192cbb-c1b8-4ccc-9260-41a82b85c663" variableName="payloadVar"/>
-		<http:request method="GET" doc:name="Search Document - GED" doc:id="ee375cd4-d820-4280-ab9f-91caa680b998" config-ref="http-request-s-gr-docubase" path="#['/searchDocument/0/' ++ vars.idPli]" responseTimeout="${http.timeout}">
+		<set-variable value="#[payload]" doc:name="Payload" doc:id="6583073c-b6bd-4054-bb81-57b1a62308d9" variableName="payloadVar"/>
+		<http:request method="GET" doc:name="Search Document - GED" doc:id="057dc236-e6a9-4af7-8334-f6a554192ead" config-ref="http-request-s-gr-docubase" path="#['/searchDocument/0/' ++ vars.idPli]" responseTimeout="${http.timeout}">
 			<http:headers ><![CDATA[#[output application/json
 ---
 {
-	"client_id" : attributes.headers.client_id,
-	"client_secret" : attributes.headers.client_secret
+	"client_id" : vars.client_id,
+	"client_secret" : vars.client_secret
 }]]]></http:headers>
 		</http:request>
-		<ee:transform doc:name="GedIds" doc:id="03e05097-5940-48bb-b435-34110c78e707" >
+		<ee:transform doc:name="GedIds" doc:id="e707da11-f93b-4c57-8b37-439802d4553c" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -106,25 +115,25 @@ output application/json
 payload.solutionExtendedList.documentExtended.documentInformation.gedId]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<foreach doc:name="For Each" doc:id="89d743ab-4d46-462c-8634-75247e641b8c" >
-			<http:request method="PATCH" doc:name="Sync Case SF Ged" doc:id="a624bc37-5c3b-4277-86b8-f0763f6a1f37" config-ref="http-request-s-gr-docubase" path="#['/base/' ++ vars.baseId ++ '/case/' ++ payload]" responseTimeout="${http.timeout}">
+		<foreach doc:name="For Each" doc:id="d17bc666-824a-4c31-9dd3-d7fc64850803" >
+			<http:request method="PATCH" doc:name="Sync Case SF Ged" doc:id="36bfa5e3-47fb-41f6-91e4-fa65abdaad13" config-ref="http-request-s-gr-docubase" path="#['/base/' ++ vars.baseId ++ '/case/' ++ payload]" responseTimeout="${http.timeout}">
 			<http:body ><![CDATA[#[vars.payloadVar]]]></http:body>
 				<http:headers><![CDATA[#[output application/json
 ---
 {
-	client_secret : attributes.headers.client_secret,
-	client_id : attributes.headers.client_id,
+	client_secret : vars.client_secret,
+	client_id : vars.client_id,
 	'X-db-connectAs' : vars."x-db-connectas"
 }]]]></http:headers>
 		</http:request>
 		</foreach>
-		<ee:transform doc:name="Set Log Configuration" doc:id="28c042e3-f03c-45f9-8cfb-9481aa16448e" >
+		<ee:transform doc:name="Set Log Configuration" doc:id="5017ea34-39e5-48d8-ab0a-21fe14d96178" >
 			<ee:message />
 			<ee:variables >
 				<ee:set-variable variableName="logMessage" ><![CDATA[%dw 2.0
 output application/java
 ---
-'Process cases from Salesforce to Docubase - Finish']]></ee:set-variable>
+'Process - Salesforce to Docubase - Updating Cases - Finish']]></ee:set-variable>
 				<ee:set-variable variableName="logCategory" ><![CDATA[%dw 2.0
 output application/java
 ---
@@ -135,6 +144,6 @@ output application/java
 'INFO']]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<flow-ref doc:name="mule-common-logger-subflow" doc:id="3137ba18-c40a-4bb5-85ba-b7b9fa3c095b" name="mule-common-logger-subflow" />
+		<flow-ref doc:name="mule-common-logger-subflow" doc:id="5a7cfc9e-2b30-4e05-865f-c4be96cef753" name="mule-common-logger-subflow" />
 	</flow>
 </mule>
