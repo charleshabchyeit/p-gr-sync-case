@@ -76,19 +76,13 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 	<configuration doc:name="Configuration"
 		doc:id="28217dea-948f-4322-b15b-c6b89e4bb45c"
 		defaultErrorHandler-ref="api-global-error-handler" />
-	<file:config name="File_Config" doc:name="File Config"
-		doc:id="ec0ddce9-f602-45be-8c8b-13658126aad0">
-		<file:connection
-			workingDir="C:\Users\nancy.kalach\Desktop\Tessi" />
-	</file:config>
 	<http:request-config name="http-request-s-gr-sfdc"
 		doc:name="HTTP Request configuration"
 		doc:id="89c8719a-97c8-457d-98eb-f8454bfcaf29"
 		basePath="${config.salesforce.path.baseURI}">
 		<http:request-connection
 			protocol="${config.salesforce.protocol}"
-			host="${config.salesforce.host}" port="${config.salesforce.port}"
-			connectionIdleTimeout="${http.timeout}" />
+			host="${config.salesforce.host}" port="${config.salesforce.port}"/>
 	</http:request-config>
 	<salesforce:sfdc-config name="Salesforce_Config"
 		doc:name="Salesforce Config"
@@ -106,10 +100,10 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 	</http:listener-config>
 	<global-property doc:name="Global Property"
 		doc:id="389235e3-1773-4f52-b439-768f1ab1556c"
-		name="recordType.Case.Reclamation" value="0121q0000000qz9AAA" />
+		name="recordType.Case.Reclamation" value="0125E000000fYMvQAM" />
 	<global-property doc:name="Global Property"
 		doc:id="d3708d02-04fc-408b-af0d-06bc892b802f"
-		name="recordType.Case.Demande" value="0121q0000000nDhAAI" />
+		name="recordType.Case.Demande" value="0125E000000fMtZQAU" />
 <!-- 	<api-gateway:autodiscovery apiId="${api.id}" -->
 <!-- 		ignoreBasePath="true" doc:name="API Autodiscovery" -->
 <!-- 		doc:id="9def1d3b-ff44-44c4-aa6e-baed71a7a9ea" -->

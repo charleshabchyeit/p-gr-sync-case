@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
 	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
 	xmlns:file="http://www.mulesoft.org/schema/mule/file"
 	xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp"
@@ -8,12 +9,12 @@
 	xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/ftp http://www.mulesoft.org/schema/mule/ftp/current/mule-ftp.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
-http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 	<flow name="get:\syncCaseTaskGedSf:p-gr-sync-case-config"
 		doc:id="aa9e729a-7d9d-4481-afe2-709316b1e83c">
 		<ee:transform doc:name="Set Log Configuration"
@@ -37,23 +38,35 @@ output application/java
 		<flow-ref doc:name="mule-common-logger-subflow"
 			doc:id="c8177b63-285e-47ce-96d8-485ce8728f79"
 			name="mule-common-logger-subflow" />
-		<http:request method="GET" doc:name="Read SFTP from Docubase" doc:id="200e021a-e963-4af1-9028-9fce0b78f411" config-ref="http-request-s-gr-docubase" path="#['${config.docubase.endpoint.readFile}']" responseTimeout="999999999">
-			<http:headers ><![CDATA[#[output application/json
+		<http:request method="GET" doc:name="List Files from Docubase SFTP" doc:id="200e021a-e963-4af1-9028-9fce0b78f411" config-ref="http-request-s-gr-docubase" path="/list" responseTimeout="${http.timeout}">
+			<http:headers><![CDATA[#[output application/json
 ---
 {
 	"client_id" : attributes.headers.client_id,
 	"client_secret" : attributes.headers.client_secret
 }]]]></http:headers>
 		</http:request>
-		<ee:transform doc:name="To JSON"
-			doc:id="da78f2ee-01b5-41ea-bed5-132c0aa465f3">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
+		<set-variable value="#[payload]" doc:name="File Names" doc:id="5893643e-a6fb-442e-8328-047976d0f355" variableName="fileNames"/>
+		<set-variable value="#[[]]" doc:name="Result Array" doc:id="ea0c1e3c-4c4a-4803-9926-c6d1a2b22541" variableName="resultArray"/>
+		<foreach doc:name="For Each" doc:id="05114db4-0753-4e5c-85fa-89f1e7f9bd35" >
+			<http:request method="GET" doc:name="Read File from Docubase SFTP" doc:id="30d26f2e-7655-4d5a-858d-2ceed8361ef1" config-ref="http-request-s-gr-docubase" path="/read" responseTimeout="${http.timeout}">
+				<http:query-params ><![CDATA[#[output application/json
+---
+{
+	fileName : payload.fileName
+}]]]></http:query-params>
+			</http:request>
+			<ee:transform doc:name="Concat Result" doc:id="db9a6a80-d50e-40ff-87f2-3ba032cd77ca" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="resultArray" ><![CDATA[%dw 2.0
 output application/json
 ---
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
+vars.resultArray ++ payload]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</foreach>
 		<ee:transform doc:name="Variables"
 			doc:id="060a11ee-b51c-4a13-9bc5-ac6ad74122fa">
 			<ee:message />
@@ -61,11 +74,11 @@ payload]]></ee:set-payload>
 				<ee:set-variable variableName="listCasesToInsert"><![CDATA[%dw 2.0
 output application/json
 ---
-payload filter (value, index) -> ((value.TypeFlux == 'E'))]]></ee:set-variable>
+vars.resultArray filter (value, index) -> ((value.TypeFlux == 'E'))]]></ee:set-variable>
 				<ee:set-variable variableName="listTasksToInsert"><![CDATA[%dw 2.0
 output application/json
 ---
-payload filter (value, index) -> ((value.TypeFlux == 'S'))]]></ee:set-variable>
+vars.resultArray filter (value, index) -> ((value.TypeFlux == 'S'))]]></ee:set-variable>
 				<ee:set-variable variableName="uniqueFieldCase"><![CDATA[%dw 2.0
 output application/json
 ---
@@ -113,11 +126,30 @@ vars.listCasesToInsert map (item, index) -> {
 }]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
-				<http:request method="POST" doc:name="Request to SF"
-					doc:id="c978909f-ca35-40e2-bd6f-d9af39d4d935"
-					config-ref="http-request-s-gr-sfdc"
-					path="#['${config.salesforce.endpoint.upsertRecords}']"
-					responseTimeout="999999999">
+				<ee:transform doc:name="Divide by 200" doc:id="98113b48-586a-4dae-a0ac-442eb522adaf">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Arrays
+output application/json
+---
+divideBy(payload,200)
+]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="client_id"><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.client_id
+]]></ee:set-variable>
+						<ee:set-variable variableName="client_secret"><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.client_secret
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<foreach doc:name="For Each" doc:id="808127a9-d05f-4ef3-8903-cb579c91996b">
+					<http:request method="POST" doc:name="Request to SF" doc:id="c978909f-ca35-40e2-bd6f-d9af39d4d935" config-ref="http-request-s-gr-sfdc" path="#['${config.salesforce.endpoint.upsertRecords}']" responseTimeout="999999999">
 					<http:headers><![CDATA[#[output application/json
 ---
 {
@@ -131,8 +163,7 @@ objectSfdc : vars.objectCase,
 externalIdField: vars.uniqueFieldCase
 }]]]></http:query-params>
 				</http:request>
-				<ee:transform doc:name="Combine Results"
-					doc:id="22e9d670-745f-4dba-9062-057a1b31db81">
+					<ee:transform doc:name="Combine Results" doc:id="22e9d670-745f-4dba-9062-057a1b31db81">
 					<ee:message />
 					<ee:variables>
 						<ee:set-variable variableName="responseMessages"><![CDATA[%dw 2.0
@@ -141,6 +172,7 @@ output application/json
 vars.responseMessages ++ payload]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
+				</foreach>
 			</when>
 			<otherwise>
 				<logger level="INFO" doc:name="Logger"
@@ -157,21 +189,40 @@ vars.responseMessages ++ payload]]></ee:set-variable>
 output application/json
 ---
 vars.listTasksToInsert map (item, index) -> {
-	"DateDeNumerisation__c" : item.'DATE DE NUMERISATION' as Date {format:"yyyyMMdd"} as Date {format: "yyyy-MM-dd"},
+	"DateDeNumerisation__c" : if(!isEmpty(item.'DATE DE NUMERISATION')) (item.'DATE DE NUMERISATION' as Date {format:"yyyyMMdd"} as Date {format: "yyyy-MM-dd"}) else "",
 	"zzz_NAdherent__c": item.'NUM ADHERENT',
 	"NumeroDuDocument__c": item.'NUM DOCUMENT',
 	"Montant__c ": item.'MONTANT CHEQUE',
 	"TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT',
-	"IdGed__c": item.'ID PLI',
+	"IDPLI__c": item.'ID PLI',
 	"Status" : "Traitée"
 } ]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
-				<http:request method="POST" doc:name="Request to SF"
-					doc:id="20d8974b-c886-4788-9740-41080c498f7f"
-					config-ref="http-request-s-gr-sfdc"
-					path="#['${config.salesforce.endpoint.upsertRecords}']"
-					responseTimeout="999999999">
+				<ee:transform doc:name="Divide by 200" doc:id="7f2c5576-b340-4e0f-95fa-b394b0f8a563">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Arrays
+output application/json
+---
+divideBy(payload,200)
+]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="client_id"><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.client_id
+]]></ee:set-variable>
+						<ee:set-variable variableName="client_secret"><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.client_secret
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<foreach doc:name="For Each" doc:id="87cf51d8-d84a-4f06-bdb1-ac48a8dfe5c3">
+					<http:request method="POST" doc:name="Request to SF" doc:id="20d8974b-c886-4788-9740-41080c498f7f" config-ref="http-request-s-gr-sfdc" path="#['${config.salesforce.endpoint.upsertRecords}']" responseTimeout="999999999">
 					<http:headers><![CDATA[#[output application/json
 ---
 {
@@ -185,8 +236,7 @@ objectSfdc : vars.objectTask,
 externalIdField: vars.uniqueFieldTask
 }]]]></http:query-params>
 				</http:request>
-				<ee:transform doc:name="Combine Results"
-					doc:id="17ad25a5-2843-4f21-aa4b-2d613a2b676d">
+					<ee:transform doc:name="Combine Results" doc:id="17ad25a5-2843-4f21-aa4b-2d613a2b676d">
 					<ee:message />
 					<ee:variables>
 						<ee:set-variable variableName="responseMessages"><![CDATA[%dw 2.0
@@ -195,12 +245,14 @@ output application/json
 vars.responseMessages ++ payload]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
+				</foreach>
 			</when>
 			<otherwise>
 				<logger level="INFO" doc:name="Logger"
 					doc:id="e928e017-5750-4872-8f29-1de8626dfef4" />
 			</otherwise>
 		</choice>
+		<flow-ref doc:name="move-file-sub-flow" doc:id="d3a57f8e-3fb3-48d7-b891-8ed28efd73e0" name="move-file-sub-flow"/>
 		<ee:transform doc:name="Final Payload"
 			doc:id="23f8cffb-9639-408d-a63b-47c4b1b91076">
 			<ee:message>
@@ -229,4 +281,22 @@ output application/java
 			doc:id="120413d2-be81-4b34-b00e-5609581633d4"
 			name="mule-common-logger-subflow" />
 	</flow>
+	<sub-flow name="move-file-sub-flow" doc:id="c00c135e-6a0a-4e74-b585-064ffc784fa6" >
+		<set-payload value="#[vars.fileNames]" doc:name="Set Payload" doc:id="cb7c3322-b604-4142-ac41-ca005b4287f7" />
+		<foreach doc:name="For Each" doc:id="94fa4d58-e0cc-4440-b435-b15f574c8452" >
+			<http:request method="GET" doc:name="Move File" doc:id="4135c509-0db1-4ebb-849a-87a2d124052a" config-ref="http-request-s-gr-docubase" path="/move">
+				<http:headers><![CDATA[#[output application/json
+---
+{
+	"client_id" : attributes.headers.client_id,
+	"client_secret" : attributes.headers.client_secret
+}]]]></http:headers>
+			<http:query-params><![CDATA[#[output application/json
+---
+{
+	fileName : payload.fileName
+}]]]></http:query-params>
+			</http:request>
+		</foreach>
+	</sub-flow>
 </mule>
