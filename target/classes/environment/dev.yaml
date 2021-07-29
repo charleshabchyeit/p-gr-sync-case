@@ -4,12 +4,11 @@ environment:
   
 api:
   name: "${application.name}-${environment.name}"
-  id: "329996"
+  id: "795536"
   version: "v1"
 
 http:
-  private:
-    port: "8081"
+  port: "8081"
   timeout: "99999999"
   listener:
     path: "/api/${api.name}/${api.version}/*"
@@ -48,7 +47,7 @@ config:
      objectCase: "Case"
      uniqueFieldCase: "IDPLI__c"
      objectTask: "Task"
-     uniqueFieldTask: "IdGed__c"
+     uniqueFieldTask: "IDPLI__c"
      queryDemandeInfo: "Select Id, Account.NAdherent__c, Contrat__r.NContrat__c, DomainedActivite__c , ReferenceEncaissement__c, MontantEncaissement__c, Reason, SousMotif__c, Status, Origin, IDPLI__c From Case where id ="
 
 # Common properties
