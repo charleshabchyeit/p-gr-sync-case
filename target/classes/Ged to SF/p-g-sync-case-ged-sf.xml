@@ -56,6 +56,35 @@ output application/java
 	fileName : payload.fileName
 }]]]></http:query-params>
 			</http:request>
+			<ee:transform doc:name="To JSON" doc:id="3b9348e4-1d98-4853-b247-e3d72af3e667" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json 
+---
+read(write(payload,"application/csv"),"application/csv",{separator:";",header:false,bodyStartLineNumber:2})
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<ee:transform doc:name="Map Columns" doc:id="c5ee3cf3-e664-4740-a753-7f13d1d946bf" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json 
+---
+payload map (item,index) ->{
+    "NUM ADHERENT": item."column_2",
+    "FAMILLE ACTE DE GESTION": item."column_3",
+    "ACTE DE GESTION": item."column_4",
+    "DATE DE NUMERISATION": item."column_6",
+    "ID PLI": item."column_7",
+    "MONTANT CHEQUE": item."column_8",
+    "CANAL ENTREE": item."column_9",
+    "NUM CONTRAT": item."column_10",
+    "NUM DOCUMENT": item."column_11",
+    "TYPOLOGIE DE DOCUMENT": item."column_12",
+    "TypeFlux": item."column_13"
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
 			<ee:transform doc:name="Concat Result" doc:id="db9a6a80-d50e-40ff-87f2-3ba032cd77ca" >
 				<ee:message >
 				</ee:message>
