@@ -43,21 +43,6 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 		doc:name="Configuration properties"
 		doc:id="e03a35af-b32d-4b56-afd2-952b25f4a6fd"
 		file="environment\default-prop.yaml" />
-	<configuration-properties
-		doc:name="Configuration properties"
-		doc:id="8bff2d44-5c67-4616-95d6-9aa01a6cb2e6"
-		file="secure/${mule.securefile}.yaml" />
-	<global-property doc:name="Global Property"
-		doc:id="030fbf64-4809-4d2b-a5b1-5a1358eb0aa6" name="mule.securefile"
-		value="dev-secure" />
-	<secure-properties:config
-		name="secure-config-p-gr-sync-case"
-		doc:name="Secure Properties Config"
-		doc:id="a52aec6b-92c9-4e77-ac7a-ad7a63c8fd90"
-		file="secure/${mule.securefile}.yaml" key="encPassword">
-		<secure-properties:encrypt
-			algorithm="Blowfish" mode="ECB" />
-	</secure-properties:config>
 	<apikit:config outboundHeadersMapName="outboundHeaders"
 		httpStatusVarName="httpStatus" doc:name="Router"
 		doc:id="d65321cb-52b0-44e3-bfea-04ad0ea9c2d5"
@@ -70,8 +55,7 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 		basePath="/${config.docubase.path.baseURI}">
 		<http:request-connection
 			protocol="${config.docubase.protocol}" host="${config.docubase.host}"
-			port="${config.docubase.port}"
-			connectionIdleTimeout="${http.timeout}" />
+			port="${config.docubase.port}"/>
 	</http:request-config>
 	<configuration doc:name="Configuration"
 		doc:id="28217dea-948f-4322-b15b-c6b89e4bb45c"
@@ -84,15 +68,6 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 			protocol="${config.salesforce.protocol}"
 			host="${config.salesforce.host}" port="${config.salesforce.port}"/>
 	</http:request-config>
-	<salesforce:sfdc-config name="Salesforce_Config"
-		doc:name="Salesforce Config"
-		doc:id="b6f170d7-41ae-40ce-a967-a01dbf7a190b">
-		<salesforce:basic-connection
-			username="${config.salesforce.username}"
-			password="${config.salesforce.password}"
-			securityToken="${config.salesforce.securityToken}"
-			url="${config.salesforce.authorizationURL}" />
-	</salesforce:sfdc-config>
 	<http:listener-config
 		name="http-listener-config-p-gr-sync-case">
 		<http:listener-connection host="0.0.0.0"
