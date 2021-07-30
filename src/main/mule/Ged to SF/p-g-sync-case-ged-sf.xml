@@ -81,7 +81,8 @@ payload map (item,index) ->{
     "NUM CONTRAT": item."column_10",
     "NUM DOCUMENT": item."column_11",
     "TYPOLOGIE DE DOCUMENT": item."column_12",
-    "TypeFlux": item."column_13"
+    "TypeFlux": item."column_13",
+    "Status": item."column_14"
 }]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
@@ -150,7 +151,7 @@ vars.listCasesToInsert map (item, index) -> {
 	"Reason": item.'ACTE DE GESTION',
 	//"SousMotif__c": if(item.'SOUS MOTIF' == 'aucun') ("") else (item.'SOUS MOTIF'),
 	("TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT') if(!isEmpty(item.'TYPOLOGIE DE DOCUMENT')),
-	//("Status": if (item.'Status' == "A TRAITER" or item.'Status' == "INCONNUS") ("A traiter") else if (item.Status == "EN COURS DE TRAITEMENT") ("En cours") else if (item.'Status' == "EN ATTENTE" or item.'Status' == "CONTROLE CHEQUE") ("En attente") else if (item.'Status' == "TRAITE") ("Clôturée") else "") if(!isEmpty(item.'Status')),
+	("Status": if (item.'Status' == "A TRAITER" or item.'Status' == "INCONNUS") ("A traiter") else if (item.Status == "EN COURS DE TRAITEMENT") ("En cours") else if (item.'Status' == "EN ATTENTE" or item.'Status' == "CONTROLE CHEQUE") ("En attente") else if (item.'Status' == "TRAITE") ("Clôturée") else "") if(!isEmpty(item.'Status'))
 	//("ReferenceEncaissement__c": item.'CMC7' default "") if(!isEmpty(item.'CMC7'))
 }]]></ee:set-payload>
 					</ee:message>
@@ -313,7 +314,7 @@ output application/java
 	<sub-flow name="move-file-sub-flow" doc:id="c00c135e-6a0a-4e74-b585-064ffc784fa6" >
 		<set-payload value="#[vars.fileNames]" doc:name="Set Payload" doc:id="cb7c3322-b604-4142-ac41-ca005b4287f7" />
 		<foreach doc:name="For Each" doc:id="94fa4d58-e0cc-4440-b435-b15f574c8452" >
-			<http:request method="GET" doc:name="Move File" doc:id="4135c509-0db1-4ebb-849a-87a2d124052a" config-ref="http-request-s-gr-docubase" path="/move">
+			<http:request method="GET" doc:name="Move File" doc:id="4135c509-0db1-4ebb-849a-87a2d124052a" config-ref="http-request-s-gr-docubase" path="/move" responseTimeout="${http.timeout}">
 				<http:headers><![CDATA[#[output application/json
 ---
 {
