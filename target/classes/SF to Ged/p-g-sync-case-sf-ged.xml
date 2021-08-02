@@ -92,7 +92,15 @@ output application/json
 	}) if(!isEmpty(payload[0].Reason)),
 	({
 	"categoryId": 41,
-	"word": if(payload[0].Status == "A traiter") ("A TRAITER") else if (payload[0].Status == "En attente") ("EN ATTENTE") else if (payload[0].Status == "En cours" or payload[0].Status == "Retour à traiter") ("EN COURS DE TRAITEMENT") else if (payload[0].Status == "Clôturée") ("TRAITE") else ""}) if(!isEmpty(payload[0].Status))
+	"word": if(payload[0].Status == "A traiter") ("A TRAITER") else if (payload[0].Status == "En attente") ("EN ATTENTE") else if (payload[0].Status == "En cours" or payload[0].Status == "Retour à traiter") ("EN COURS DE TRAITEMENT") else if (payload[0].Status == "Clôturée") ("TRAITE") else ""}) if(!isEmpty(payload[0].Status)),
+    	({
+	"categoryId": 42,
+	"word": payload[0].SousMotif__c
+	}) if(!isEmpty(payload[0].SousMotif__c)),
+    	({
+	"categoryId": 40,
+	"word": payload[0].ReferenceEncaissement__c
+	}) if(!isEmpty(payload[0].ReferenceEncaissement__c))
 	]
 }
 ]]></ee:set-payload>
