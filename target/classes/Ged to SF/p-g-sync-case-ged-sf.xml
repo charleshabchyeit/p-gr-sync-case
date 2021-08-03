@@ -49,7 +49,7 @@ output application/java
 		<set-variable value="#[payload]" doc:name="File Names" doc:id="5893643e-a6fb-442e-8328-047976d0f355" variableName="fileNames"/>
 		<set-variable value="#[[]]" doc:name="Result Array" doc:id="ea0c1e3c-4c4a-4803-9926-c6d1a2b22541" variableName="resultArray"/>
 		<foreach doc:name="For Each" doc:id="05114db4-0753-4e5c-85fa-89f1e7f9bd35" >
-			<http:request method="GET" doc:name="Read File from Docubase SFTP" doc:id="30d26f2e-7655-4d5a-858d-2ceed8361ef1" config-ref="http-request-s-gr-docubase" path="/read" responseTimeout="${http.timeout}">
+			<http:request method="GET" doc:name="Read File from Docubase SFTP" doc:id="30d26f2e-7655-4d5a-858d-2ceed8361ef1" config-ref="http-request-s-gr-docubase" path="/read" responseTimeout="${http.timeout}" outputMimeType="application/csv">
 				<http:query-params ><![CDATA[#[output application/json
 ---
 {
@@ -82,7 +82,8 @@ payload map (item,index) ->{
     "NUM DOCUMENT": item."column_11",
     "TYPOLOGIE DE DOCUMENT": item."column_12",
     "TypeFlux": item."column_13",
-    "Status": item."column_14"
+    "CMC7": item."column_14",
+    "Status": item."column_15"
 }]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
@@ -151,8 +152,8 @@ vars.listCasesToInsert map (item, index) -> {
 	"Reason": item.'ACTE DE GESTION',
 	//"SousMotif__c": if(item.'SOUS MOTIF' == 'aucun') ("") else (item.'SOUS MOTIF'),
 	("TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT') if(!isEmpty(item.'TYPOLOGIE DE DOCUMENT')),
-	("Status": if (item.'Status' == "A TRAITER" or item.'Status' == "INCONNUS") ("A traiter") else if (item.Status == "EN COURS DE TRAITEMENT") ("En cours") else if (item.'Status' == "EN ATTENTE" or item.'Status' == "CONTROLE CHEQUE") ("En attente") else if (item.'Status' == "TRAITE") ("Clôturée") else "") if(!isEmpty(item.'Status'))
-	//("ReferenceEncaissement__c": item.'CMC7' default "") if(!isEmpty(item.'CMC7'))
+	("Status": if (item.'Status' == "A TRAITER" or item.'Status' == "INCONNUS") ("A traiter") else if (item.Status == "EN COURS DE TRAITEMENT") ("En cours") else if (item.'Status' == "EN ATTENTE" or item.'Status' == "CONTROLE CHEQUE") ("En attente") else if (item.'Status' == "TRAITE") ("Clôturée") else "") if(!isEmpty(item.'Status')),
+	("ReferenceEncaissement__c": item.'CMC7' default "") if(!isEmpty(item.'CMC7'))
 }]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
@@ -282,7 +283,7 @@ vars.responseMessages ++ payload]]></ee:set-variable>
 					doc:id="e928e017-5750-4872-8f29-1de8626dfef4" />
 			</otherwise>
 		</choice>
-		<flow-ref doc:name="move-file-sub-flow" doc:id="d3a57f8e-3fb3-48d7-b891-8ed28efd73e0" name="move-file-sub-flow"/>
+<!-- 		<flow-ref doc:name="move-file-sub-flow" doc:id="d3a57f8e-3fb3-48d7-b891-8ed28efd73e0" name="move-file-sub-flow"/> -->
 		<ee:transform doc:name="Final Payload"
 			doc:id="23f8cffb-9639-408d-a63b-47c4b1b91076">
 			<ee:message>
