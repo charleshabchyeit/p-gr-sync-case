@@ -38,18 +38,45 @@ output application/java
 		<flow-ref doc:name="mule-common-logger-subflow"
 			doc:id="c8177b63-285e-47ce-96d8-485ce8728f79"
 			name="mule-common-logger-subflow" />
+		<ee:transform doc:name="Variables" doc:id="d6690cfb-8205-4384-a983-697158334763" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="client_id" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.client_id
+]]></ee:set-variable>
+				<ee:set-variable variableName="client_secret" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers.client_secret
+]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
 		<http:request method="GET" doc:name="List Files from Docubase SFTP" doc:id="200e021a-e963-4af1-9028-9fce0b78f411" config-ref="http-request-s-gr-docubase" path="/list" responseTimeout="${http.timeout}">
 			<http:headers><![CDATA[#[output application/json
 ---
 {
-	"client_id" : attributes.headers.client_id,
-	"client_secret" : attributes.headers.client_secret
+	"client_id" : vars.client_id,
+	"client_secret" : vars.client_secret
 }]]]></http:headers>
 		</http:request>
 		<set-variable value="#[payload]" doc:name="File Names" doc:id="5893643e-a6fb-442e-8328-047976d0f355" variableName="fileNames"/>
 		<set-variable value="#[[]]" doc:name="Result Array" doc:id="ea0c1e3c-4c4a-4803-9926-c6d1a2b22541" variableName="resultArray"/>
 		<foreach doc:name="For Each" doc:id="05114db4-0753-4e5c-85fa-89f1e7f9bd35" >
 			<http:request method="GET" doc:name="Read File from Docubase SFTP" doc:id="30d26f2e-7655-4d5a-858d-2ceed8361ef1" config-ref="http-request-s-gr-docubase" path="/read" responseTimeout="${http.timeout}" outputMimeType="application/csv">
+				<http:headers ><![CDATA[#[output application/json
+---
+{
+	"client_id" : vars.client_id,
+	"client_secret" : vars.client_secret
+}]]]></http:headers>
 				<http:query-params ><![CDATA[#[output application/json
 ---
 {
@@ -74,6 +101,7 @@ payload map (item,index) ->{
     "NUM ADHERENT": item."column_2",
     "FAMILLE ACTE DE GESTION": item."column_3",
     "ACTE DE GESTION": item."column_4",
+    "SOUS MOTIF": item."column_5",
     "DATE DE NUMERISATION": item."column_6",
     "ID PLI": item."column_7",
     "MONTANT CHEQUE": item."column_8",
@@ -150,7 +178,7 @@ vars.listCasesToInsert map (item, index) -> {
 	("MontantEncaissement__c ": item.'MONTANT CHEQUE') if(!isEmpty(item.'MONTANT CHEQUE')),
 	"Origin": if(item.'CANAL ENTREE' =="P" or item.'CANAL ENTREE' =="F")("Courrier")else if(item.'CANAL ENTREE' =="M")("Email")else if(item.'CANAL ENTREE' =="E")("Web") else (""),
 	"Reason": item.'ACTE DE GESTION',
-	//"SousMotif__c": if(item.'SOUS MOTIF' == 'aucun') ("") else (item.'SOUS MOTIF'),
+	"SousMotif__c": if(item.'SOUS MOTIF' == 'aucun') ("") else (item.'SOUS MOTIF'),
 	("TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT') if(!isEmpty(item.'TYPOLOGIE DE DOCUMENT')),
 	("Status": if (item.'Status' == "A TRAITER" or item.'Status' == "INCONNUS") ("A traiter") else if (item.Status == "EN COURS DE TRAITEMENT") ("En cours") else if (item.'Status' == "EN ATTENTE" or item.'Status' == "CONTROLE CHEQUE") ("En attente") else if (item.'Status' == "TRAITE") ("Clôturée") else "") if(!isEmpty(item.'Status')),
 	("ReferenceEncaissement__c": item.'CMC7' default "") if(!isEmpty(item.'CMC7'))
@@ -184,8 +212,8 @@ attributes.headers.client_secret
 					<http:headers><![CDATA[#[output application/json
 ---
 {
-	"client_id" : attributes.headers.client_id,
-	"client_secret" : attributes.headers.client_secret
+	"client_id" : vars.client_id,
+	"client_secret" : vars.client_secret
 }]]]></http:headers>
 					<http:query-params><![CDATA[#[output application/json
 ---
@@ -257,8 +285,8 @@ attributes.headers.client_secret
 					<http:headers><![CDATA[#[output application/json
 ---
 {
-	"client_id" : attributes.headers.client_id,
-	"client_secret" : attributes.headers.client_secret
+	"client_id" : vars.client_id,
+	"client_secret" : vars.client_secret
 }]]]></http:headers>
 					<http:query-params><![CDATA[#[output application/json
 ---
@@ -319,8 +347,8 @@ output application/java
 				<http:headers><![CDATA[#[output application/json
 ---
 {
-	"client_id" : attributes.headers.client_id,
-	"client_secret" : attributes.headers.client_secret
+	"client_id" : vars.client_id,
+	"client_secret" : vars.client_secret
 }]]]></http:headers>
 			<http:query-params><![CDATA[#[output application/json
 ---
