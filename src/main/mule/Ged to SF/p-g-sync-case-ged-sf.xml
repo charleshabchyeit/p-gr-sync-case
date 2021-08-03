@@ -40,11 +40,6 @@ output application/java
 			name="mule-common-logger-subflow" />
 		<ee:transform doc:name="Variables" doc:id="d6690cfb-8205-4384-a983-697158334763" >
 			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
----
-{
-}]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
 				<ee:set-variable variableName="client_id" ><![CDATA[%dw 2.0
@@ -195,16 +190,6 @@ divideBy(payload,200)
 ]]></ee:set-payload>
 					</ee:message>
 					<ee:variables>
-						<ee:set-variable variableName="client_id"><![CDATA[%dw 2.0
-output application/json
----
-attributes.headers.client_id
-]]></ee:set-variable>
-						<ee:set-variable variableName="client_secret"><![CDATA[%dw 2.0
-output application/json
----
-attributes.headers.client_secret
-]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
 				<foreach doc:name="For Each" doc:id="808127a9-d05f-4ef3-8903-cb579c91996b">
@@ -268,16 +253,6 @@ divideBy(payload,200)
 ]]></ee:set-payload>
 					</ee:message>
 					<ee:variables>
-						<ee:set-variable variableName="client_id"><![CDATA[%dw 2.0
-output application/json
----
-attributes.headers.client_id
-]]></ee:set-variable>
-						<ee:set-variable variableName="client_secret"><![CDATA[%dw 2.0
-output application/json
----
-attributes.headers.client_secret
-]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
 				<foreach doc:name="For Each" doc:id="87cf51d8-d84a-4f06-bdb1-ac48a8dfe5c3">
