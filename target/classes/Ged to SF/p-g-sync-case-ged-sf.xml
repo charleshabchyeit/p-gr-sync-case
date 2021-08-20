@@ -169,13 +169,13 @@ vars.listCasesToInsert map (item, index) -> {
 	("Account": {NAdherent__c: item.'NUM ADHERENT'}) if(!isEmpty(item.'NUM ADHERENT')),
 	("Contrat__r": {"type": "Contract", NContrat__c: item.'NUM CONTRAT'}) if(!isEmpty(item.'NUM CONTRAT')),
 	("DomainedActivite__c": item.'FAMILLE ACTE DE GESTION') if(!isEmpty(item.'FAMILLE ACTE DE GESTION')),
-	"RecordtypeId" : if(item.'FAMILLE ACTE DE GESTION' == "Réclamation")(p('recordType.Case.Reclamation'))else(p('recordType.Case.Demande')),
+	"RecordtypeId" : if(item.'FAMILLE ACTE DE GESTION' == "RECLAMATION")(p('recordType.Case.Reclamation'))else(p('recordType.Case.Demande')),
 	("MontantEncaissement__c ": item.'MONTANT CHEQUE') if(!isEmpty(item.'MONTANT CHEQUE')),
 	"Origin": if(item.'CANAL ENTREE' =="P" or item.'CANAL ENTREE' =="F")("Courrier")else if(item.'CANAL ENTREE' =="M")("Email")else if(item.'CANAL ENTREE' =="E")("Web") else (""),
 	"Reason": item.'ACTE DE GESTION',
-	"SousMotif__c": if(item.'SOUS MOTIF' == 'aucun') ("") else (item.'SOUS MOTIF'),
+	"SousMotif__c": if(item.'SOUS MOTIF' == 'AUCUN') ("") else (item.'SOUS MOTIF'),
 	("TypologieDeDocument__c": item.'TYPOLOGIE DE DOCUMENT') if(!isEmpty(item.'TYPOLOGIE DE DOCUMENT')),
-	("Status": if (item.'Status' == "A TRAITER" or item.'Status' == "INCONNUS") ("A traiter") else if (item.Status == "EN COURS DE TRAITEMENT") ("En cours") else if (item.'Status' == "EN ATTENTE" or item.'Status' == "CONTROLE CHEQUE") ("En attente") else if (item.'Status' == "TRAITE") ("Clôturée") else "") if(!isEmpty(item.'Status')),
+	("Status": if (item.'STATUT' == "A TRAITER" or item.'STATUT' == "INCONNUS") ("A traiter") else if (item.'STATUT'== "EN COURS DE TRAITEMENT") ("En cours") else if (item.'STATUT' == "EN ATTENTE" or item.'STATUT' == "CONTROLE CHEQUE") ("En attente") else if (item.'STATUT' == "TRAITE") ("Clôturée") else "") if(!isEmpty(item.'STATUT')),
 	("ReferenceEncaissement__c": item.'CMC7' default "") if(!isEmpty(item.'CMC7'))
 }]]></ee:set-payload>
 					</ee:message>
