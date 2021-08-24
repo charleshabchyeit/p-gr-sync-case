@@ -1,13 +1,63 @@
+# Environment specific properties
 environment:
- name: "![TYx63+PckT5A0h9oA9gWYQ==]"
-application:
- name: "Mule 4 Template API"
+ name: "test"
+  
 api:
- name: "mule-4-template-api-${secure::environment.name}"
- id: "15688395"
- version: "v1"
- http:
+  name: "${application.name}-${environment.name}"
+  id: "875578"
+  version: "v1"
+
+http:
+  port: "8081"
+  timeout: "99999999"
   listener:
-   path: "/api/${api.name}/${api.version}/*"
-   host: "0.0.0.0"
-   port: "8081"
+    path: "/api/${api.name}/${api.version}/*"
+
+https:
+  listener:
+    path: "/api/${api.name}/${api.version}/*"   
+
+config:
+  docubase:
+    protocol: "HTTP"
+    host: "mule-worker-internal-s-gr-docubase.de-c1.eu1.cloudhub.io"
+    port: "8091"
+    path:
+      baseURI: "api/s-gr-docubase-test/v1"
+    endpoint: 
+      getDocument: "/searchDocument"
+      getTag: "/tag"
+      getTree: "/getTree"
+      readFile: "/file"
+
+  salesforce:
+     protocol: "HTTP"
+     authorizationURL: "https://test.salesforce.com/services/Soap/u/50.0"
+     host: "mule-worker-internal-s-gr-sfdc.de-c1.eu1.cloudhub.io"
+     port: "8091"
+     username: "mulesoft.api@garance.fr.lot1real"
+     password: "garance@123"
+     securityToken: "tKO7vwAyJhyB2QRzU4VOmaQKy"
+     basepath: "api/s-gr-sfdc-test/v1/upsertRecords"
+     path:
+       baseURI: "api/s-gr-sfdc-test/v1"
+     endpoint:
+       upsertRecords: "/upsertRecords"
+       getRecord: "/getRecord"
+     objectCase: "Case"
+     uniqueFieldCase: "IDPLI__c"
+     objectTask: "Task"
+     uniqueFieldTask: "IDPLI__c"
+     queryDemandeInfo: "Select Id, Account.NAdherent__c, Contrat__r.NContrat__c, DomainedActivite__c , ReferenceEncaissement__c, MontantEncaissement__c, Reason, SousMotif__c, Status, Origin, IDPLI__c From Case where id ="
+
+# Common properties
+common:
+  audit:
+    role:
+      logStart: "true"
+      logEnd: "true"
+      logInfo: "true"
+      logWarning: "true"
+      logError: "true"
+      logDebug: "true"
+    defaultLogPayloadLogic: "ALWAYS"

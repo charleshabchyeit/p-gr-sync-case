@@ -66,7 +66,7 @@ queryString : vars.personalInfoQuery
 		<ee:transform doc:name="SF to Docubase" doc:id="65913042-1910-478a-b2fd-840f36b8ef23" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
+output application/json encoding="Cp1252"
 ---
 {
 "criterionList": [
