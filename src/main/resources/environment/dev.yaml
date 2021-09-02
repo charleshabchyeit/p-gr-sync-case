@@ -35,9 +35,6 @@ config:
      authorizationURL: "https://test.salesforce.com/services/Soap/u/50.0"
      host: "mule-worker-internal-s-gr-sfdc.de-c1.eu1.cloudhub.io"
      port: "8091"
-     username: "mulesoft.api@garance.fr.lot1real"
-     password: "garance@123"
-     securityToken: "tKO7vwAyJhyB2QRzU4VOmaQKy"
      basepath: "api/s-gr-sfdc-dev/v1/upsertRecords"
      path:
        baseURI: "api/s-gr-sfdc-dev/v1"
