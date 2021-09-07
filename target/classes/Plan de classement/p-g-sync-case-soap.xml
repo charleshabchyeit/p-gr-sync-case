@@ -33,7 +33,7 @@ output application/java
 			</ee:variables>
 		</ee:transform>
 		<flow-ref doc:name="mule-common-logger-subflow" doc:id="593213ad-d40a-4d4a-8642-2e3e3071e152" name="mule-common-logger-subflow" />
-		<http:request method="GET" doc:name="Get Tree from Docubase" doc:id="de59fd92-354c-461a-8ec2-0f49339ba45d" config-ref="http-request-s-gr-docubase" path="#['${config.docubase.endpoint.getTree}']" responseTimeout="999999999">
+		<http:request method="GET" doc:name="Get Tree from Docubase" doc:id="de59fd92-354c-461a-8ec2-0f49339ba45d" config-ref="http-request-s-gr-docubase" path="#['${config.docubase.endpoint.getTree}']" responseTimeout="${http.timeout}">
 			<http:headers ><![CDATA[#[output application/json
 ---
 {

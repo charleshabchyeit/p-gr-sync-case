@@ -1,10 +1,10 @@
 # Environment specific properties
 environment:
- name: "dev"
+ name: "test"
   
 api:
   name: "${application.name}-${environment.name}"
-  id: "795536"
+  id: "875578"
   version: "v1"
 
 http:
@@ -23,7 +23,7 @@ config:
     host: "localhost"
     port: "8084"
     path:
-      baseURI: "api/s-gr-docubase-dev/v1"
+      baseURI: "api/s-gr-docubase-test/v1"
     endpoint: 
       getDocument: "/searchDocument"
       getTag: "/tag"
@@ -35,9 +35,9 @@ config:
      authorizationURL: "https://test.salesforce.com/services/Soap/u/50.0"
      host: "localhost"
      port: "8083"
-     basepath: "api/s-gr-sfdc-dev/v1/upsertRecords"
+     basepath: "api/s-gr-sfdc-test/v1/upsertRecords"
      path:
-       baseURI: "api/s-gr-sfdc-dev/v1"
+       baseURI: "api/s-gr-sfdc-test/v1"
      endpoint:
        upsertRecords: "/upsertRecords"
        getRecord: "/getRecord"
