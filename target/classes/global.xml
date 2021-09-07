@@ -23,7 +23,7 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 		file="environment/${mule.env}.yaml" />
 	<global-property doc:name="Global Property"
 		doc:id="cb59defa-5026-44e9-98f0-71f6b6adf835" name="mule.env"
-		value="devLocal" />
+		value="testLocal" />
 	<import doc:name="Import"
 		doc:id="1e8c16e3-01bd-4fef-8532-be191a188b3e"
 		file="common/audit/audit.xml" />
@@ -81,7 +81,5 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 		name="recordType.Case.Demande" value="0125E000000fMtZQAU" />
 <!-- 	<api-gateway:autodiscovery apiId="${api.id}" -->
 <!-- 		ignoreBasePath="true" doc:name="API Autodiscovery" -->
-<!-- 		doc:id="9def1d3b-ff44-44c4-aa6e-baed71a7a9ea" -->
-<!-- 		flowRef="p-gr-sync-case-main" /> -->
-
+<!-- 		doc:id="9def1d3b-ff44-44c4-aa6e-baed71a7a9ea" flowRef="p-gr-sync-case-main" /> -->
 </mule>
